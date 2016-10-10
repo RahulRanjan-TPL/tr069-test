@@ -1,3 +1,5 @@
+import java.lang.reflect.Field
+
 buildscript {
     repositories {
         jcenter()
@@ -40,15 +42,15 @@ android {
 	}
 	
 	productFlavors {
-		gd_icntv_mstar{
-			signingConfig signingConfigs.mstarConfig
-            buildTypes.debug.signingConfig = signingConfigs.mstarConfig
+        mstar_gd_icntv{
+//			signingConfig signingConfigs.mstarConfig
+//            buildTypes.debug.signingConfig = signingConfigs.mstarConfig
 		}
-		bstv {
-		
+        amlogic_bstv {
+
 		}
 	}
-	
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -58,9 +60,16 @@ android {
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
-			
+
 			//为不同的项目配置源码目录
-			gd_icntv_mstar.java.srcDirs = ['paltfrom/mstar/gd_icntv/']
+            productFlavors.all {
+//                flavor -> flavor.manifestPlaceholders = [ONEAPM_TEST_CHANNEL: name]
+                String path = "paltfrom/" + name.split("_")[0] + "/" + name.substring(name.indexOf("_") + 1, name.length())
+                println(path)
+                sourceSets.getByName(name).java.srcDirs = [path]
+//                println(java.srcDirs)
+//                println(sourceSets.getByName(name).java.srcDirs)
+            }
         }
     
 		
@@ -78,7 +87,11 @@ android {
     }
 
     buildTypes {
-
+        productFlavors.all {
+//            println(signingConfigs.getByName(name.split("_")[0] + "Config"))
+            signingConfig = signingConfigs.getByName(name.split("_")[0] + "Config")
+            debug.signingConfig = signingConfigs.getByName(name.split("_")[0] + "Config")
+        }
     }
 	
 	lintOptions {
